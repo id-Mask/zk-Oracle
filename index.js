@@ -5,7 +5,6 @@
 // prove you're an adult
 // prove you're not on a sancions list
 
-const axios = require('axios')
 const crypto = require('crypto')
 const x509 = require('@ghaiklor/x509')
 const authHash = require('./authhash.js')
