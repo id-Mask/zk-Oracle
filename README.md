@@ -1,4 +1,4 @@
-# Bringing official personal identity data into zk smart contracts
+# Bringing personal identity data into zk smart contracts
 
 ## smart-ID
 
