@@ -91,9 +91,14 @@ const main = async () => {
   // get the smart-id data
   const data = await getData(session.sessionID)
   const isValid = verifyData(data, hash)
-  console.log('data valid?'. isValid)
+  console.log('data valid?', isValid)
   const data_ = decodeData(data)
   console.log(data_)
 }
 
-main()
+module.exports = {
+  initiateSession,
+  getData,
+  verifyData,
+  decodeData
+};
