@@ -27,7 +27,7 @@ const getSmartIdData = async (country, pno) => {
       'allowedInteractionsOrder': [
         {
           'type': 'displayTextAndPIN',
-          'displayText60': 'Hello, this is demo!'
+          'displayText60': 'Hello, this is ZK demo! 🫶'
         }
       ]
     }
@@ -83,7 +83,6 @@ const getSmartIdData = async (country, pno) => {
   }
 
   // putting all the pieces defined above together
-
   const hash = await authHash.generateRandomHash()
   const session = await initiateSession(country, pno, hash)
   const data = await getData(session.sessionID)
@@ -91,7 +90,6 @@ const getSmartIdData = async (country, pno) => {
   console.log('data valid?', isValid)
   const data_ = decodeData(data)
   return data_
-
 }
 
 
