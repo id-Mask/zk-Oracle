@@ -1,10 +1,3 @@
-// together with opensancions, we can prove the individual is not sanctioned
-// https://api.opensanctions.org/#tag/Matching/operation/search_search__dataset__get
-
-// prove unique human
-// prove you're an adult
-// prove you're not on a sancions list
-
 const crypto = require('crypto')
 const x509 = require('@ghaiklor/x509')
 const authHash = require('./authhash.js')
@@ -27,7 +20,7 @@ const getSmartIdData = async (country, pno) => {
       'allowedInteractionsOrder': [
         {
           'type': 'displayTextAndPIN',
-          'displayText60': 'Hello, this is ZK demo! 🫶'
+          'displayText60': 'Hello, this is ZK demo! 🤜🤛'
         }
       ]
     }
