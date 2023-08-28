@@ -2,7 +2,7 @@
 
 ## Elevator pitch
 
-Departing from mere proof-of-concept proposals, this project forges ahead by bringing together **valid and authentic real-world personal identification data with smart contracts**. But how is this made possible? The answer lies in the clever combination of oracles and the widely used [smart-ID app](www.smart-id.com), the most popular online authentication mobile application in the Baltic states.
+Departing from mere proof-of-concept proposals, this project forges ahead by bringing together **valid and authentic real-world personal identification data with smart contracts**. But how is this made possible? The answer lies in the clever combination of oracles and the widely used [smart-ID app](https://www.smart-id.com), the most popular online authentication mobile application in the Baltic states.
 
 Why is this significant, and what drives the need for it? To demonstrate the potential of incorporating personal data into smart contracts, three use-cases will be implemented:
 
@@ -10,7 +10,7 @@ Why is this significant, and what drives the need for it? To demonstrate the pot
 - 🧑 proof of adulthood
 - 🛡 ️proof of not being on international sanctions list
 
-Note that users will be able to zk-prove these statements if they are citizens or residents of one of the Baltic states or are [Estonian e-residents](www.e-resident.gov.ee/) 🪪.
+Note that users will be able to zk-prove these statements if they are citizens or residents of one of the Baltic states or are [Estonian e-residents](https://www.e-resident.gov.ee/) 🪪.
 
 To streamline the process, all functionalities will be consolidated within a single zkApp, equipped with a simple and user-friendly frontend. This empowers users to effortlessly generate proofs and review existing ones with utmost convenience.
 
