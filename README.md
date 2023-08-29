@@ -15,3 +15,9 @@ Note that users will be able to zk-prove these statements if they are citizens o
 To streamline the process, all functionalities will be consolidated within a single zkApp, equipped with a simple and user-friendly frontend. This empowers users to effortlessly generate proofs and review existing ones with utmost convenience.
 
 To support wider adoption and allow other developers to leverage personal identification data in their own zkApps, the Oracle responsible for powering this integration, will be clearly documented and opened for unlimited use. The documentation will provide comprehensive instructions for developers interested in utilizing personal identification data in their projects (see [demo documentation](https://smart-id-oracle-2qz4wkdima-uc.a.run.app/api-docs/)).
+
+## Architecture
+
+URL: https://miro.com/app/board/uXjVMqJ2miM=/
+
+![img](https://i.imgur.com/aujSKMt.png)
