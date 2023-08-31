@@ -18,7 +18,7 @@ In the world of blockchain, identities are basically distilled to nothing more t
 
 We propose to build an app that allows users to prove statements about themselves using zero knowledge proofs (i.e. not sharing any personal information except for the proof) and link them to their blockchain address. The proposed solution combines two underlying technologies: Mina blockchain that enables the use of zero knowledge proofs and Smart-ID that helps streamline personal information.
 
-## **Explaining the details of the proofs**
+### **Explaining the details of the proofs**
 
 First, let's illustrate the solution by explaining how would a zero-knowledge-proof of a person being over 21 years of age would be generated. Note that the personal identification information received from smart-ID never leaves the client side, i.e. the user's computer device. Only the generated proof is being submitted to the blockchain. This is the core idea behind the zero-knowledge-proof.
 
@@ -36,7 +36,7 @@ The generation of proof of not being on a list of sanctioned individuals again f
 
 To better understand the technologies involved and shown in the diagram, let's tackle them one by one.
 
-## **What are zero knowledge proofs and what is Mina protocol?**
+### **What are zero knowledge proofs and what is Mina protocol?**
 
 In case the readers are not familiar with it, first let's understand what zero knowledge proofs are (skip this part if you already know). The formal definition is as follows: a zero-knowledge proof is a method by which one party (the prover) can prove to another party (the verifier) that a given statement is true, while avoiding conveying to the verifier any information beyond the mere fact of the statement's truth.
 
@@ -50,7 +50,7 @@ How does [Mina Protocol](https://docs.minaprotocol.com/about-mina) come into pla
 
 _The technologies and tools discussed here are technically heavy and not easy to grasp. For better and more in-depth explanations of zero knowledge proofs and related concepts please see_ [_this video_](https://www.youtube.com/watch?v=fOGdb1CTu5c) _by a famous professor and computer scientist or this_ [_blogpost_](https://ethereum.org/en/zero-knowledge-proofs/) _from Ethereum's foundation. For more in-depth explanations of Mina smart contracts and how zero knowledge proofs are related to it see this_ [_blogpost_](https://0xhegemon.substack.com/p/smart-contracts-coming-to-mina)_, or this_ [_blogpost_](https://docs.staketab.com/academy/mina/zkapps)_. For more information on what are zk-Oracles see this_ [_blogpost_](https://minaprotocol.com/blog/what-are-zkoracles)_._
 
-## **What is smart-ID?**
+### **What is smart-ID?**
 
 [Smart-ID](https://www.smart-id.com/) has emerged as the single dominant authentication service among people in the Baltic countries. It boasts widespread adoption with the absolute majority of the adult population (aged 15-64 years) - over 3.3 million people - utilizing this service. The fundamental concept behind Smart-ID is to securely provide personal information to online services by approving and digitally signing data requests through a mobile phone, thereby proving one's identity beyond doubt.
 
@@ -79,14 +79,14 @@ Charge a fee for proofs created. Users could be allowed to generate proofs for a
 
 # **Additional information**
 
-## **What changed recently that makes this feasible right now?**
+### **What changed recently that makes this feasible right now?**
 
 Two reasons:
 
 1. Mina protocol offers breaking new technology with zero-knowledge-proofs baked into the protocol, allowing for zero-knowledge-proofs to be generated as part of the smart contracts. No other blockchain or service offers such functionalities.
 2. Smart-ID has become very popular and is used by majority of the population in the Baltic states which makes it very accessible and easy to utilize. No other place has embraced digital authentication such as smart-ID as much as the Baltic states.
 
-## **What is your unfair advantage in solving this problem?**
+### **What is your unfair advantage in solving this problem?**
 
 Knowledge and understanding of two seemingly totally unrelated technologies: smart-ID and Mina protocol with zero-knowledge-proofs baked in into smart contracts. Another unique advantage point is being in the Baltic states where an easy-to-use and the most prevalent online authentication service smart-ID is so popular that absolute majority of the total population is using it every day. There are not many countries, where a single online authentication service has gained so much popularity. Having access to whole population that is available to create the proofs give us an advantage.
 
@@ -96,19 +96,19 @@ Also:
 2. **Bravery in tackling complex issues** allows us to approach the problem with a fresh perspective and the willingness to explore unconventional avenues.
 3. **First mover advantage** because no one or unknown teams are solving this problem using the means proposed. The proposed product/service does not exist today.
 
-## **What other companies are solving this problem today or could if they wanted to?**
+### **What other companies are solving this problem today or could if they wanted to?**
 
 As far as we are aware, this proposal is totally unique and new. No other products like this currently exist. There's no product or service that offers users to prove they are not sanctioned or prove their age using zero knowledge environment.
 
 Various initiatives, such as World Coin, Proof of Humanity, Human Protocol, Humanode have sought to address the digital identity problem (more on this in [Vitalik's interview in Time magazine](https://time.com/6142810/proof-of-humanity/)). However, a combination of smart-ID and Minas' zero-knowledge-powered smart contracts, presents a simple, unique, and powerful solution to this problem.
 
-## **Product name**
+### **Product name**
 
 🌌 **ShadowCloak** : zk-powered-identity
 
 🐦 **anonBird:** zk-powered-identity
 
-## **Pre-prototype experiments:**
+### **Pre-prototype experiments:**
 
 [https://github.com/RaidasGrisk/mina-smart-ID](https://github.com/RaidasGrisk/mina-smart-ID)
 
