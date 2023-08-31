@@ -2,7 +2,7 @@
 
 Consider the feasibility of proving the absence of financial sanctions or specific criminal records without disclosing any personal details; or proving that you are of legal drinking age without disclosing your birthdate; or proving online that you're a distinct human being coupled with a unique identifier linked to you, as opposed to a bot, allowing for equal representation in voting. Using these proofs could be exceptionally useful for people, businesses as well as government, regulatory and other organizations.
 
-The proposal is to create an app that allows creation of such zero knowledge proofs. We propose building the app by blending Mina blockchain, zero knowledge proofs, and the widely renowned app in the Baltic States - Smart-ID.
+The proposal is to develop an app that enables the creation of zero-knowledge proofs, empowering individuals to verify statements about their identity without disclosing any personal information. The solution integrates Mina blockchain, zero knowledge proofs, and the widely renowned app in the Baltic States - Smart-ID.
 
 # **The problem**
 
