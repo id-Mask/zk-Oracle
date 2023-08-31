@@ -1,3 +1,6 @@
+# Revolutionizing Digital Identity: Introducing a Zero-Knowledge-Powered Solution
+#
+
 # **Pitch; TLDR;**
 
 Consider the feasibility of proving the absence of financial sanctions or specific criminal records without disclosing any personal details; or proving that you are of legal drinking age without disclosing your birthdate; or proving online that you're a distinct human being coupled with a unique identifier linked to you, as opposed to a bot, allowing for equal representation in voting. Using these proofs could be exceptionally useful for people, businesses as well as government, regulatory and other organizations.
