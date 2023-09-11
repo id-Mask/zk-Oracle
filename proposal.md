@@ -135,12 +135,6 @@ Also:
 2. **Bravery in tackling complex issues** allows us to approach the problem with a fresh perspective and the willingness to explore unconventional avenues.
 3. **First mover advantage** because no one or unknown teams are solving this problem using the means proposed. The proposed product/service does not exist today.
 
-## **What other companies are solving this problem today or could if they wanted to?**
-
-As far as we are aware, this proposal is totally unique and new. No other products like this currently exist. There's no product or service that offers users to prove they are not sanctioned or prove their age using zero knowledge environment.
-
-Various initiatives, such as World Coin, Proof of Humanity, Human Protocol, Humanode have sought to address the digital identity problem (more on this in [Vitalik's interview in Time magazine](https://time.com/6142810/proof-of-humanity/)). However, a combination of smart-ID and Minas' zero-knowledge-powered smart contracts, presents a simple, unique, and powerful solution to this problem.
-
 ## **Product name**
 
 🌌 **ShadowCloak** : zk-powered-identity
