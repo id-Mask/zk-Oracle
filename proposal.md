@@ -125,7 +125,7 @@ Two reasons:
 1. Mina protocol offers breaking new technology with zero-knowledge-proofs baked into the protocol, allowing for zero-knowledge-proofs to be generated as part of the smart contracts. No other blockchain or service offers such functionalities.
 2. Smart-ID has become very popular and is used by majority of the population in the Baltic states which makes it very accessible and easy to utilize. No other place has embraced digital authentication such as smart-ID as much as the Baltic states.
 
-**What is your unfair advantage in solving this problem?**
+## **What is your unfair advantage in solving this problem?**
 
 Knowledge and understanding of two seemingly totally unrelated technologies: smart-ID and Mina protocol with zero-knowledge-proofs baked in into smart contracts. Another unique advantage point is being in the Baltic states where an easy-to-use and the most prevalent online authentication service smart-ID is so popular that absolute majority of the total population is using it every day. There are not many countries, where a single online authentication service has gained so much popularity. Having access to whole population that is available to create the proofs give us an advantage.
 
