@@ -29,7 +29,7 @@ First, let's illustrate the solution by explaining how would a zero-knowledge-pr
 
 Besides being a simple example, the diagram also explains the app architecture and how Client side, Mina blockchain and smart-ID interaction will play out.
 
-![](RackMultipart20230911-1-3qi64a_html_860dd88c3c6473d6.png)
+![](https://i.imgur.com/pFa3Gj5.jpg)
 
 _Full size diagram:_ [_https://miro.com/app/board/uXjVMqJ2miM=/_](https://miro.com/app/board/uXjVMqJ2miM=/)or [https://i.imgur.com/pFa3Gj5.jpg](https://i.imgur.com/pFa3Gj5.jpg)
 
