@@ -1,13 +1,13 @@
 # Digital Identity: Introducing a Zero-Knowledge-Powered Solution
 #
 
-## Pitch; TLDR;
+# Pitch; TLDR;
 
 Consider the feasibility of proving the absence of financial sanctions without disclosing any personal details; or proving that you are of legal drinking age without disclosing your birthdate; or proving online that you’re a distinct human being coupled with a unique identifier linked to you, as opposed to a bot, allowing for equal representation in voting. Using these proofs could be exceptionally useful for people, businesses as well as government, regulatory and other organizations. 
 
 The proposal is to develop an app that enables the creation of zero-knowledge proofs, empowering individuals to verify statements about their identity without disclosing any personal information. The solution integrates Mina blockchain, zero knowledge proofs, and the widely renowned app in the Baltic States - Smart-ID (with a prospect to expand to other countries/regions and their smart-ID-like-counterparts).
 
-## Problem
+# Problem
 
 In the world of blockchain, identities are basically distilled to nothing more than public addresses. Take for instance this address [0x61b03…e976D2](https://etherscan.io/address/0x61b03d08530f6be861a72f9bb66ba9d998e976d2); we do not know who controls it; it could be your neighbor or prime minister of Lithuania. While intentional and welcomed, pseudonymity in the blockchain world has eventually led to numerous challenges. The inability to link a blockchain address to a real-world identity poses the following problems:
 
