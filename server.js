@@ -2,7 +2,7 @@ const express = require('express')
 const expressJSDocSwagger = require('express-jsdoc-swagger')
 const { getSmartIdData } = require('./index.js')
 const authHash = require('./authhash.js')
-const { PrivateKey, Encoding, Signature } = require('snarkyjs')
+const { PrivateKey, Signature, CircuitString, Field } = require('o1js')
 const cors = require('cors')
 require('dotenv').config()
 
@@ -28,17 +28,18 @@ app.use(cors({ origin: '*' }))
 expressJSDocSwagger(app)(options)
 
 
-const get_oracle_signature = (name, surname, country, pno) => {
+const get_oracle_signature = (name, surname, country, pno, timestamp) => {
 
   const privateKey = PrivateKey.fromBase58(process.env.PRIVATE_KEY)
   const publicKey = privateKey.toPublicKey()
 
   // encode and sign the data
   const merged_array_of_fields = [
-    ...Encoding.stringToFields(name),
-    ...Encoding.stringToFields(surname),
-    ...Encoding.stringToFields(country),
-    ...Encoding.stringToFields(pno)
+    ...CircuitString.fromString(name).toFields(),
+    ...CircuitString.fromString(surname).toFields(),
+    ...CircuitString.fromString(country).toFields(),
+    ...CircuitString.fromString(pno).toFields(),
+    Field(timestamp),
   ]
   const signature = Signature.create(privateKey, merged_array_of_fields)
 
@@ -90,25 +91,25 @@ app.get('/get_mock_data', async (req, res) => {
   // get the data we want to send as a response
   const name = data.subject.givenName
   const surname = data.subject.surname
-  const country_ = data.subject.countryName
-  const pno_ = data.subject.serialNumber
+  const country = data.subject.countryName
+  const pno = data.subject.serialNumber
+  const timestamp = Math.floor(Date.now() / 1000)
 
-  const [signature, publicKey] = get_oracle_signature(name, surname, country_, pno_)
+  const [signature, publicKey] = get_oracle_signature(name, surname, country, pno, timestamp)
 
   // create the response
   const response = {
     data: {
       name: name,
       surname: surname,
-      country: country_,
-      pno: pno_,
+      country: country,
+      pno: pno,
+      timestamp: timestamp,
     },
     signature: signature,
     publicKey: publicKey,
   }
-
   res.send(response)
-
 
 })
 
@@ -136,12 +137,10 @@ app.get('/get_mock_data', async (req, res) => {
  */
 app.post('/get_data', async (req, res) => {
 
-  const pno = req.body.pno
-  const country = req.body.country
   let data // declaring because of the try / catch block
 
   try {
-    data = await getSmartIdData(country, pno)
+    data = await getSmartIdData(req.body.country, req.body.pno)
   } catch (err) {
     res.status(500).json({ error: 'Error in the smartID flow' })
     return
@@ -150,25 +149,27 @@ app.post('/get_data', async (req, res) => {
   // get the data we want to send as a response
   const name = data.subject.givenName
   const surname = data.subject.surname
-  const country_ = data.subject.countryName
-  const pno_ = data.subject.serialNumber
+  const country = data.subject.countryName
+  const pno = data.subject.serialNumber
+  const timestamp = Math.floor(Date.now() / 1000)
 
   // encode and sign the data
-  const [signature, publicKey] = get_oracle_signature(name, surname, country_, pno_)
+  const [signature, publicKey] = get_oracle_signature(name, surname, country, pno, timestamp)
 
   // create the response
   const response = {
     data: {
       name: name,
       surname: surname,
-      country: country_,
-      pno: pno_,
+      country: country,
+      pno: pno,
+      timestamp: timestamp,
     },
     signature: signature,
     publicKey: publicKey,
   }
-
   res.send(response)
+
 })
 
 
