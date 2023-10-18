@@ -17,8 +17,6 @@ To fetch Smart-ID data, follow these steps:
   5. Parse and Decode Data: The retrieved data is typically in certificate format. Parse and decode this data to make it readable and usable for your application.
   6. Sign Data with O1JS-Compatible Signature and return. This allows the data to be used inside the zkProgram/smart-contract.
 
-TODO: check out computeVerificationCode, the codes do not match.
-
 */
 
 const getRandomHash = async () => {
@@ -32,8 +30,8 @@ const getRandomHash = async () => {
 
 // https://github.com/SK-EID/smart-id-documentation#23132-computing-the-verification-code
 const computeVerificationCode = (hash) => {
-  const lastTwoBytes = hash.raw.slice(-2)
-  const intValue = lastTwoBytes.readUInt16BE(0)
+  const hashedHash = crypto.createHash('sha256').update(Buffer.from(hash.digest, 'base64')).digest()
+  const intValue = hashedHash.readUIntBE(hashedHash.length - 2, 2)
   const code = intValue % 10000
   return code
 }
@@ -160,10 +158,11 @@ const getMockSmartIdData = () => {
 
 module.exports = {
   getRandomHash,
+  computeVerificationCode,
   initiateSession,
   getData,
   verifyData,
   decodeData,
   getOracleSignature,
-  computeVerificationCode,
+  getMockSmartIdData
 }
