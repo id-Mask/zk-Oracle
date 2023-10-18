@@ -1,8 +1,16 @@
 const express = require('express')
 const expressJSDocSwagger = require('express-jsdoc-swagger')
-const { getSmartIdData } = require('./index.js')
-const authHash = require('./authhash.js')
-const { PrivateKey, Signature, CircuitString, Field } = require('o1js')
+const {
+  getRandomHash,
+  initiateSession,
+  getData,
+  verifyData,
+  decodeData,
+  getOracleSignature,
+  getMockSmartIdData,
+  computeVerificationCode,
+} = require('./smartIdUtils.js')
+
 const cors = require('cors')
 require('dotenv').config()
 
@@ -27,24 +35,19 @@ app.use(express.json())
 app.use(cors({ origin: '*' }))
 expressJSDocSwagger(app)(options)
 
-
-const get_oracle_signature = (name, surname, country, pno, timestamp) => {
-
-  const privateKey = PrivateKey.fromBase58(process.env.PRIVATE_KEY)
-  const publicKey = privateKey.toPublicKey()
-
-  // encode and sign the data
-  const merged_array_of_fields = [
-    ...CircuitString.fromString(name).toFields(),
-    ...CircuitString.fromString(surname).toFields(),
-    ...CircuitString.fromString(country).toFields(),
-    ...CircuitString.fromString(pno).toFields(),
-    Field(timestamp),
-  ]
-  const signature = Signature.create(privateKey, merged_array_of_fields)
-
-  return [signature, publicKey]
+// In-memory storage of the random hashes for sessions sessionId -> hash
+// TODO: use queue to create a limited size storage..?
+// TODO: explain why this is needed.
+const secretStorage = new Map()
+const maxStorageSize = 10
+const clearSecretStorage = () => {
+  if (secretStorage.size > maxStorageSize) {
+    const keysToDelete = Array.from(secretStorage.keys()).slice(0, secretStorage.size - maxStorageSize)
+    keysToDelete.forEach(key => secretStorage.delete(key))
+  }
 }
+const clearIntervalMillis = 300000 // 5 minutes
+setInterval(clearSecretStorage, clearIntervalMillis)
 
 
 /**
@@ -66,111 +69,86 @@ app.get('/ping', (req, res) => {
  * @tags Helpers
  */
 app.get('/get_mock_data', async (req, res) => {
-
-  // add some randomness
-  const names = ['Jane', 'Douglas', 'Abraham', 'Spruce', 'Hilary', 'Lance']
-  const sunames = ['Doe', 'Lyphe', 'Pigeon', 'Springclean', 'Ouse', 'Nettlewater']
-  const countryNames = ['LT', 'LV', 'EE']
-
-  const randomName = names[Math.floor(Math.random()*names.length)]
-  const randomSurname = sunames[Math.floor(Math.random()*sunames.length)]
-  const randonCountryName = countryNames[Math.floor(Math.random()*countryNames.length)]
-  const randomYear = Math.floor(Math.random() * 10).toString() + Math.floor(Math.random() * 10).toString()
-  const randomFiveDigitNumber = Math.floor(Math.random() * 90000) + 10000
-
-  const data = {
-    subject: {
-      countryName: randonCountryName,
-      commonName: randomSurname + ',' + randomName,
-      surname: randomSurname,
-      givenName: randomName,
-      serialNumber: 'PNOLT-4' + randomYear + '111' + randomFiveDigitNumber.toString()
-    }
-  }
-
-  // get the data we want to send as a response
-  const name = data.subject.givenName
-  const surname = data.subject.surname
-  const country = data.subject.countryName
-  const pno = data.subject.serialNumber
-  const timestamp = Math.floor(Date.now() / 1000)
-
-  const [signature, publicKey] = get_oracle_signature(name, surname, country, pno, timestamp)
-
-  // create the response
-  const response = {
-    data: {
-      name: name,
-      surname: surname,
-      country: country,
-      pno: pno,
-      timestamp: timestamp,
-    },
-    signature: signature,
-    publicKey: publicKey,
-  }
-  res.send(response)
-
+  const data = getMockSmartIdData()
+  res.send(data)
 })
 
 
 /**
- * POST /get_data
- * @summary Initiate a smart-id session, fetch data if user confirms the request and return data together with a signature
+ * POST /initiateSession
+ * @summary Initiate a smart-id session and get session id. Use session id in getData request.
  * @tags Oracle
- * @param {object} request.body - a json containing personal ID number (PNO) and country (LT, LV, EE)
- * @example request - payload example LT
- * {
- *   "pno": 123456789,
- *   "country": "LT"
- * }
- * @example request - payload example LV
- * {
- *   "pno": 123456789,
- *   "country": "LV"
- * }
+ * @param {object} request.body - a json containing personal ID number (PNO), country (LT, LV, EE), and display text that the users will see on smart ID push notification
  * @example request - payload example EE
  * {
  *   "pno": 123456789,
- *   "country": "EE"
+ *   "country": "EE",
+ *   "displayText": "Hi, this is xyz app requesting your data"
+ * }
+ * @example request - payload example LT
+ * {
+ *   "pno": 123456789,
+ *   "country": "LT",
+ *   "displayText": "Hi, this is xyz app requesting your data"
  * }
  */
-app.post('/get_data', async (req, res) => {
-
-  let data // declaring because of the try / catch block
-
+app.post('/initiateSession', async (req, res) => {
   try {
-    data = await getSmartIdData(req.body.country, req.body.pno)
+    const hash = await getRandomHash()
+    const data = await initiateSession(req.body.country, req.body.pno, hash, req.body.displayText)
+    secretStorage.set(data.sessionID, hash)
+    const verificationCode = computeVerificationCode(hash)
+    data.verificationCode = verificationCode
+    res.send(data)
   } catch (err) {
-    res.status(500).json({ error: 'Error in the smartID flow' })
-    return
+    console.log(err)
+    res.status(500).json({ error: 'Error in the smartID flow' });
   }
-
-  // get the data we want to send as a response
-  const name = data.subject.givenName
-  const surname = data.subject.surname
-  const country = data.subject.countryName
-  const pno = data.subject.serialNumber
-  const timestamp = Math.floor(Date.now() / 1000)
-
-  // encode and sign the data
-  const [signature, publicKey] = get_oracle_signature(name, surname, country, pno, timestamp)
-
-  // create the response
-  const response = {
-    data: {
-      name: name,
-      surname: surname,
-      country: country,
-      pno: pno,
-      timestamp: timestamp,
-    },
-    signature: signature,
-    publicKey: publicKey,
-  }
-  res.send(response)
-
 })
 
+
+/**
+ * POST /getData
+ * @summary Get user data (assuming that user aproved it on smart-id app after sending initiateSession)
+ * @tags Oracle
+ * @param {object} request.body - a json containing sessionID
+ * @example request - payload example
+ * {
+ *   "sessionID": "899edab0-1694-4860-9105-dd74ee8c00d7"
+ * }
+ */
+app.post('/getData', async (req, res) => {
+  try {
+    const data = await getData(req.body.sessionID)
+    const hash = secretStorage.get(req.body.sessionID)
+    const isValid = verifyData(data, hash)
+    if (!isValid) res.status(500).json({ error: 'Sha signature issue' })
+    const data_ = decodeData(data)
+    const timestamp = Math.floor(Date.now() / 1000)
+
+    const [signature, publicKey] = getOracleSignature(
+      data_.subject.givenName,
+      data_.subject.surname,
+      data_.subject.countryName,
+      data_.subject.serialNumber,
+      timestamp,
+    )
+
+    res.send({
+      data: {
+        name: data_.subject.givenName,
+        surname: data_.subject.surname,
+        country: data_.subject.countryName,
+        pno: data_.subject.serialNumber,
+        timestamp: timestamp,
+      },
+      signature: signature.toJSON(),
+      publicKey: publicKey.toBase58(),
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Error in the smartID flow' });
+  }
+})
 
 app.listen(8080, () => console.log(`Example app listening.`))
