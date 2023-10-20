@@ -70,7 +70,27 @@ app.get('/ping', (req, res) => {
  */
 app.get('/get_mock_data', async (req, res) => {
   const data = getMockSmartIdData()
-  res.send(data)
+  const timestamp = Math.floor(Date.now() / 1000)
+
+  const [signature, publicKey] = getOracleSignature(
+    data.subject.givenName,
+    data.subject.surname,
+    data.subject.countryName,
+    data.subject.serialNumber,
+    timestamp,
+  )
+
+  res.send({
+    data: {
+      name: data.subject.givenName,
+      surname: data.subject.surname,
+      country: data.subject.countryName,
+      pno: data.subject.serialNumber,
+      timestamp: timestamp,
+    },
+    signature: signature.toJSON(),
+    publicKey: publicKey.toBase58(),
+  })
 })
 
 
