@@ -7,15 +7,30 @@ require('dotenv').config()
 /*
 
 Smart-ID Data Fetching Utility
-This file contains utility functions for fetching Smart-ID data. These utility functions are used to define API endpoints in `index.js`.
+This file contains utility functions for fetching Smart-ID data.
+These utility functions are used to define API endpoints in `index.js`.
 
 To fetch Smart-ID data, follow these steps:
-  1. Generate Random Hash: it will be passed to the Smart-ID backend. This hash is used to sign the data.
-  2. Request Session ID: Pass the generated hash, along with the country and personal identification number (pno) to the Smart-ID backend. The user will be prompted to allow or deny this request on their smartphone.
-  3. Retrieve Data with Session ID: Use the obtained session ID to fetch the desired data from the Smart-ID backend.
-  4. Verify Data Signature: Verify the data by checking if the signature matches the previously generated random hash. This ensures data integrity and authenticity.
-  5. Parse and Decode Data: The retrieved data is typically in certificate format. Parse and decode this data to make it readable and usable for your application.
-  6. Sign Data with O1JS-Compatible Signature and return. This allows the data to be used inside the zkProgram/smart-contract.
+  1. Generate Random Hash: it will be passed to the Smart-ID backend.
+  This hash is used to sign the data.
+
+  2. Request Session ID: Pass the generated hash, along with the country and
+  personal identification number (pno) to the Smart-ID backend. The user will
+  be prompted to allow or deny this request on their smartphone.
+
+  3. Retrieve Data with Session ID: Use the obtained session ID to fetch the
+  desired data from the Smart-ID backend.
+
+  4. Verify Data Signature: Verify the data by checking if the signature
+  matches the previously generated random hash. This ensures data integrity
+  and authenticity.
+
+  5. Parse and Decode Data: The retrieved data is typically in certificate
+  format. Parse and decode this data to make it readable and usable for your
+  application.
+
+  6. Sign Data with O1JS-Compatible Signature and return. This allows the data
+  to be used inside the zkProgram/smart-contract.
 
 */
 
@@ -54,7 +69,8 @@ const initiateSession = async (country, pno, hash, displayText) => {
     ]
   }
 
-  const response = await fetch(baseURL + 'authentication/etsi/' + 'PNO' + country + '-' + pno, {
+  const url = baseURL + 'authentication/etsi/' + 'PNO' + country + '-' + pno
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -67,7 +83,8 @@ const initiateSession = async (country, pno, hash, displayText) => {
 
 const getData = async (session) => {
   const baseURL = 'https://sid.demo.sk.ee/smart-id-rp/v2/'
-  const response = await fetch(baseURL + 'session/' + session + '?timeoutMs=30000', {
+  const url = baseURL + 'session/' + session + '?timeoutMs=30000'
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -131,27 +148,28 @@ const getMockSmartIdData = () => {
   const names = ['Jane', 'Douglas', 'Abraham', 'Spruce', 'Hilary', 'Lance']
   const sunames = ['Doe', 'Lyphe', 'Pigeon', 'Springclean', 'Ouse', 'Nettlewater']
   const countres = ['LT', 'LV', 'EE']
-  const sexAndCentury = [1, 2, 3, 4, 5, 6]
-  const year = Array.from({ length: 90 }, (_, index) => index + 10)
-  const month = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-  const day = Array.from({ length: 30 }, (_, index) => index + 10)
+  const sexAndCenturies = [1, 2, 3, 4, 5, 6]
+  const years = Array.from({ length: 99 }, (_, index) => (index + 1).toString().padStart(2, '0'))
+  const months = Array.from({ length: 12 }, (_, index) => (index + 1).toString().padStart(2, '0'))
+  const days = Array.from({ length: 30 }, (_, index) => (index + 1).toString().padStart(2, '0'))
+  console.log(years, months, days)
 
-  const randomName = getRandomItemFromArray(names)
-  const randomSurname = getRandomItemFromArray(sunames)
-  const randomCountry = getRandomItemFromArray(countres)
-  const randomSexAndYear = getRandomItemFromArray(sexAndCentury)
-  const randomYear = getRandomItemFromArray(year)
-  const randomMonth = getRandomItemFromArray(month)
-  const randomDay = getRandomItemFromArray(day)
-  const randomFourDigitNumber = Math.floor(Math.random() * 9000) + 1000
+  const name = getRandomItemFromArray(names)
+  const surname = getRandomItemFromArray(sunames)
+  const country = getRandomItemFromArray(countres)
+  const sexAndCentury = getRandomItemFromArray(sexAndCenturies)
+  const year = getRandomItemFromArray(years)
+  const month = getRandomItemFromArray(months)
+  const day = getRandomItemFromArray(days)
+  const fourDigitNumber = Math.floor(Math.random() * 9000) + 1000
 
   return {
     subject: {
-      countryName: randomCountry,
-      commonName: randomSurname + ',' + randomName,
-      surname: randomSurname,
-      givenName: randomName,
-      serialNumber: `PNO${randomCountry}-${randomSexAndYear}${randomYear}${randomMonth}${randomDay}${randomFourDigitNumber}`
+      countryName: country,
+      commonName: surname + ',' + name,
+      surname: surname,
+      givenName: name,
+      serialNumber: `PNO${country}-${sexAndCentury}${year}${month}${day}${fourDigitNumber}`
     }
   }
 }
