@@ -152,7 +152,6 @@ const getMockSmartIdData = () => {
   const years = Array.from({ length: 99 }, (_, index) => (index + 1).toString().padStart(2, '0'))
   const months = Array.from({ length: 12 }, (_, index) => (index + 1).toString().padStart(2, '0'))
   const days = Array.from({ length: 30 }, (_, index) => (index + 1).toString().padStart(2, '0'))
-  console.log(years, months, days)
 
   const name = getRandomItemFromArray(names)
   const surname = getRandomItemFromArray(sunames)
