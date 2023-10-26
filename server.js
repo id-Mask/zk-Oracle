@@ -70,14 +70,15 @@ app.get('/ping', (req, res) => {
  */
 app.get('/get_mock_data', async (req, res) => {
   const data = getMockSmartIdData()
-  const timestamp = Math.floor(Date.now() / 1000)
+  const now = new Date()
+  const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
   const [signature, publicKey] = getOracleSignature(
     data.subject.givenName,
     data.subject.surname,
     data.subject.countryName,
     data.subject.serialNumber,
-    timestamp,
+    currentDate,
   )
 
   res.send({
@@ -86,7 +87,7 @@ app.get('/get_mock_data', async (req, res) => {
       surname: data.subject.surname,
       country: data.subject.countryName,
       pno: data.subject.serialNumber,
-      timestamp: timestamp,
+      currentDate: currentDate,
     },
     signature: signature.toJSON(),
     publicKey: publicKey.toBase58(),
@@ -144,14 +145,15 @@ app.post('/getData', async (req, res) => {
     const isValid = verifyData(data, hash)
     if (!isValid) res.status(500).json({ error: 'Sha signature issue' })
     const data_ = decodeData(data)
-    const timestamp = Math.floor(Date.now() / 1000)
+    const now = new Date()
+    const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
 
     const [signature, publicKey] = getOracleSignature(
       data_.subject.givenName,
       data_.subject.surname,
       data_.subject.countryName,
       data_.subject.serialNumber,
-      timestamp,
+      currentDate,
     )
 
     res.send({
@@ -160,7 +162,7 @@ app.post('/getData', async (req, res) => {
         surname: data_.subject.surname,
         country: data_.subject.countryName,
         pno: data_.subject.serialNumber,
-        timestamp: timestamp,
+        currentDate: currentDate,
       },
       signature: signature.toJSON(),
       publicKey: publicKey.toBase58(),
@@ -171,4 +173,4 @@ app.post('/getData', async (req, res) => {
   }
 })
 
-app.listen(8080, () => console.log(`Example app listening.`))
+app.listen(8080, () => console.log(`App's running.`))
