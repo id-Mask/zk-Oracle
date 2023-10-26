@@ -18,8 +18,8 @@ require('dotenv').config()
 const options = {
   info: {
     version: 'demo',
-    title: 'zkSmart-ID: Personal Identification Data and ZK Smart Contracts Join Forces 🤜🤛',
-    description: 'Bridge valid and authentic real-world personal identification data to your smart contracts',
+    title: 'Id-Mask: zk powered identity',
+    description: 'API endpoints for accessing identity and associated data that powers Id-Mask zkApp.',
   },
   baseDir: __dirname,
   swaggerUIPath: '/api-docs',
@@ -64,11 +64,11 @@ app.get('/ping', (req, res) => {
 
 
 /**
- * GET /get_mock_data
- * @summary Fetch randomized mock data
+ * GET /getSmartIDMockData
+ * @summary Get Smart-ID mock data
  * @tags Helpers
  */
-app.get('/get_mock_data', async (req, res) => {
+app.get('/getSmartIDMockData', async (req, res) => {
   const data = getMockSmartIdData()
   const now = new Date()
   const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
@@ -98,7 +98,7 @@ app.get('/get_mock_data', async (req, res) => {
 /**
  * POST /initiateSession
  * @summary Initiate a smart-id session and get session id. Use session id in getData request.
- * @tags Oracle
+ * @tags Smart-ID oracle
  * @param {object} request.body - a json containing personal ID number (PNO), country (LT, LV, EE), and display text that the users will see on smart ID push notification
  * @example request - payload example EE
  * {
@@ -131,7 +131,7 @@ app.post('/initiateSession', async (req, res) => {
 /**
  * POST /getData
  * @summary Get user data (assuming that user aproved it on smart-id app after sending initiateSession)
- * @tags Oracle
+ * @tags Smart-ID oracle
  * @param {object} request.body - a json containing sessionID
  * @example request - payload example
  * {
