@@ -173,4 +173,74 @@ app.post('/getData', async (req, res) => {
   }
 })
 
+
+/**
+ * POST /getOFACmatches
+ * @summary Check user data agains OFAC database
+ * @tags OFAC oracle
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * {
+ *	 "minScore": 95,
+ *   "pid": {
+ *      "name": "Sergei Vladilenovich",
+ *      "dob": "1962-07-26",
+ *      "citizenship": "russia",
+ *      "gender": "male"
+ *    }
+ * }
+ */
+app.post('/getOFACmatches', async (req, res) => {
+
+  // TODO:
+  //  request data must be from the smart-id-oracle
+  //  check if smart-id data is valid
+  //  parse dob, citizenship and gender
+  //  output pid signature from the smart-id as part of this oracle data
+  //  check if signature matches inside the zkProgram
+
+  // perform OFAC search
+  const url = 'https://search.ofac-api.com/v3'
+  const body = {
+    apiKey: process.env.OFAC_API_KEY,
+    source: ['SDN'], // 'UK'
+    minScore: req.body.minScore,
+    cases: [ req.body.pid ]
+  }
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+  const response_ = await response.json()
+
+  /**
+   * The oracle returns:
+   *    isMatched [1 or 0] depending on if indicivual is sanctioned or not
+   *    score [0 to 100] match accuracy score
+   * Additionally it returns full match data, but it is not signed
+   * and can be used outside of zkProgram to show sanctions data
+  */
+
+  // sort matches by score
+  const matchName = Object.keys(response_.matches)[0]
+  const matchData = response_.matches[matchName]
+  console.log(response_, matchName, matchData)
+  const data = {
+    data: {
+      isMatched: matchData.length > 0 ? 1 : 0,
+      score: req.body.minScore,
+      pidSignature: null,
+    },
+    // signature: signature.toJSON(),
+    // publicKey: publicKey.toBase58(),
+    metaData: response_
+  }
+
+  res.send(data)
+})
+
+
 app.listen(8080, () => console.log(`App's running.`))
