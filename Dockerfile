@@ -1,7 +1,7 @@
-# docker build -t eu.gcr.io/zk-snarkyjs-oracles/smart-id-oracle .
-# docker run -p 8080:8080 eu.gcr.io/zk-snarkyjs-oracles/smart-id-oracle
-# docker push eu.gcr.io/zk-snarkyjs-oracles/smart-id-oracle
-# gcloud run deploy --image eu.gcr.io/zk-snarkyjs-oracles/smart-id-oracle
+# docker build -t eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle .
+# docker run -p 8080:8080 eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
+# docker push eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
+# gcloud run deploy --image eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
 
 
 # Stage 1: Build dependencies
