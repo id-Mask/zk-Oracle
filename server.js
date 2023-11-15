@@ -11,6 +11,13 @@ const {
   computeVerificationCode,
 } = require('./smartIdUtils.js')
 
+const {
+  verifyOracleData,
+  transformData,
+  searchOFAC,
+  getOFACOracleSignature,
+} = require('./sanctionsUtils.js')
+
 const cors = require('cors')
 require('dotenv').config()
 
@@ -181,65 +188,81 @@ app.post('/getData', async (req, res) => {
  * @param {object} request.body - a json containing data
  * @example request - payload example
  * {
- *	 "minScore": 95,
- *   "pid": {
- *      "name": "Sergei Vladilenovich",
- *      "dob": "1962-07-26",
- *      "citizenship": "russia",
- *      "gender": "male"
- *    }
+ *   "data": {
+ *      "name": "Sergei",
+ *      "surname": "Vladilenovich",
+ *      "country": "RU",
+ *      "pno": "PNORU-36207260000",
+ *      "currentDate": "2023-11-14"
+ *   },
+ *   "signature": {
+ *      "r": "133205463316647794335097537582988924407415497704796238493085970946682406458462",
+ *      "s": "2839777157158987506119785369209543664288688328224239095576203716263145578489"
+ *   },
+ *   "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
  * }
  */
 app.post('/getOFACmatches', async (req, res) => {
 
-  // TODO:
-  //  request data must be from the smart-id-oracle
-  //  check if smart-id data is valid
-  //  parse dob, citizenship and gender
-  //  output pid signature from the smart-id as part of this oracle data
-  //  check if signature matches inside the zkProgram
-
-  // perform OFAC search
-  const url = 'https://search.ofac-api.com/v3'
-  const body = {
-    apiKey: process.env.OFAC_API_KEY,
-    source: ['SDN'], // 'UK'
-    minScore: req.body.minScore,
-    cases: [ req.body.pid ]
-  }
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-  const response_ = await response.json()
-
   /**
    * The oracle returns:
    *    isMatched [1 or 0] depending on if indicivual is sanctioned or not
-   *    score [0 to 100] match accuracy score
+   *    minScore [0 to 100] minimum match accuracy score set by the user
    * Additionally it returns full match data, but it is not signed
    * and can be used outside of zkProgram to show sanctions data
   */
 
-  // sort matches by score
-  const matchName = Object.keys(response_.matches)[0]
-  const matchData = response_.matches[matchName]
-  console.log(response_, matchName, matchData)
-  const data = {
-    data: {
-      isMatched: matchData.length > 0 ? 1 : 0,
-      score: req.body.minScore,
-      pidSignature: null,
-    },
-    // signature: signature.toJSON(),
-    // publicKey: publicKey.toBase58(),
-    metaData: response_
+  // could verify other fields as well, but for now lets verify
+  // minScore only because it's an additional key to existing smartID resp
+  if (!req.body.minScore) {
+    return res.send({ error: 'missing minScore' })
   }
 
-  res.send(data)
+  // verify if provided data is valid, i.e. data is from the smartID oracle
+  // and is properly signed and not tampered with
+  try {
+    const isDataValid = verifyOracleData(req.body)
+    if (!isDataValid) {
+      return res.send({ error: 'verify signature: invalid data' })
+    }
+  } catch (error) {
+    return res.send({ error: error.toString() })
+  }
+
+  // transform data received from smartID to data that fits OFAC search
+  // and send the search request
+  let response
+  try {
+    const transformedData = transformData(req.body.data)
+    response = await searchOFAC(req.body.minScore, transformedData)
+  } catch (error) {
+    return res.send({ error: error.toString() })
+  }
+
+  // check if matched OFAC records
+  const matchName = Object.keys(response.matches)[0]
+  const matchData = response.matches[matchName]
+  const isMatched = matchData.length > 0 ? 1 : 0
+
+  // get signature
+  const now = new Date()
+  const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+  const [signature, publicKey] = getOFACOracleSignature(
+    isMatched,
+    req.body.minScore,
+    currentDate,
+  )
+
+  return res.send({
+    data: {
+      isMatched: isMatched,
+      minScore: req.body.minScore,
+      currentDate: currentDate,
+    },
+    signature: signature.toJSON(),
+    publicKey: publicKey.toBase58(),
+    metaData: response
+  })
 })
 
 
