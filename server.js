@@ -9,14 +9,14 @@ const {
   getOracleSignature,
   getMockSmartIdData,
   computeVerificationCode,
-} = require('./smartIdUtils.js')
+} = require('./smartId.utils.js')
 
 const {
   verifyOracleData,
   transformData,
   searchOFAC,
   getOFACOracleSignature,
-} = require('./sanctionsUtils.js')
+} = require('./sanctions.utils.js')
 
 const cors = require('cors')
 require('dotenv').config()
@@ -268,4 +268,4 @@ app.post('/getOFACmatches', async (req, res) => {
 })
 
 
-app.listen(8080, () => console.log(`App's running.`))
+app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))

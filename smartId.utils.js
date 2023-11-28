@@ -1,6 +1,5 @@
 const crypto = require('crypto')
 const x509 = require('@ghaiklor/x509')
-const cors = require('cors')
 const { PrivateKey, Signature, CircuitString, Field } = require('o1js')
 require('dotenv').config()
 
@@ -115,7 +114,6 @@ const decodeData = (response_) => {
 
   const cert = CERT_BEGIN + BODY_VALUE + CERT_END
   const parsedCert = x509.parseCert(cert)
-  const subject = x509.getSubject(cert)
 
   return parsedCert
 }
