@@ -132,7 +132,7 @@ const getOracleSignature = (name, surname, country, pno, currentDate) => {
     ...CircuitString.fromString(surname).toFields(),
     ...CircuitString.fromString(country).toFields(),
     ...CircuitString.fromString(pno).toFields(),
-    ...CircuitString.fromString(currentDate).toFields(),
+    Field(currentDate),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 

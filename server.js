@@ -73,12 +73,12 @@ app.get('/ping', (req, res) => {
 /**
  * GET /getSmartIDMockData
  * @summary Get Smart-ID mock data
- * @tags Helpers
+ * @tags Smart-ID oracle
  */
 app.get('/getSmartIDMockData', async (req, res) => {
   const data = getMockSmartIdData()
   const now = new Date()
-  const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+  const currentDate = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
 
   const [signature, publicKey] = getOracleSignature(
     data.subject.givenName,
@@ -153,7 +153,7 @@ app.post('/getData', async (req, res) => {
     if (!isValid) res.status(500).json({ error: 'Sha signature issue' })
     const data_ = decodeData(data)
     const now = new Date()
-    const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+    const currentDate = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
 
     const [signature, publicKey] = getOracleSignature(
       data_.subject.givenName,
@@ -193,13 +193,15 @@ app.post('/getData', async (req, res) => {
  *      "surname": "Vladilenovich",
  *      "country": "RU",
  *      "pno": "PNORU-36207260000",
- *      "currentDate": "2023-11-14"
+ *      "currentDate": 20231114
  *   },
+ * 
  *   "signature": {
- *      "r": "133205463316647794335097537582988924407415497704796238493085970946682406458462",
- *      "s": "2839777157158987506119785369209543664288688328224239095576203716263145578489"
+ *      "r": "24806714253289738333607744171564365993302841908156387358317011371156340489792",
+ *      "s": "1943438842762617285560965587782140841558694095580526167609408761354758601867"
  *   },
- *   "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
+ *   "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN",
+ *   "minScore": 95
  * }
  */
 app.post('/getOFACmatches', async (req, res) => {
@@ -242,11 +244,11 @@ app.post('/getOFACmatches', async (req, res) => {
   // check if matched OFAC records
   const matchName = Object.keys(response.matches)[0]
   const matchData = response.matches[matchName]
-  const isMatched = matchData.length > 0 ? 1 : 0
+  const isMatched = matchData.length > 0 ? true : false
 
   // get signature
   const now = new Date()
-  const currentDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+  const currentDate = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
   const [signature, publicKey] = getOFACOracleSignature(
     isMatched,
     req.body.minScore,

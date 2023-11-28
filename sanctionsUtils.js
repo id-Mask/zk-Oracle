@@ -1,4 +1,11 @@
-const { PrivateKey, PublicKey, Signature, CircuitString, Field } = require('o1js')
+const {
+  PrivateKey,
+  PublicKey,
+  Signature,
+  CircuitString,
+  Field,
+  Bool
+} = require('o1js')
 require('dotenv').config()
 
 const verifyOracleData = (data) => {
@@ -9,7 +16,7 @@ const verifyOracleData = (data) => {
     ...CircuitString.fromString(data.data.surname).toFields(),
     ...CircuitString.fromString(data.data.country).toFields(),
     ...CircuitString.fromString(data.data.pno).toFields(),
-    ...CircuitString.fromString(data.data.currentDate).toFields(),
+    Field(data.data.currentDate),
   ])
   return validSignature.toBoolean()
 }
@@ -28,7 +35,7 @@ const transformData = (data) => {
   *   surname: string,
   *   country: string,
   *   pno: string,
-  *   currentDate: string
+  *   currentDate: number
   * }
   *
   * Output Structure:
@@ -103,9 +110,9 @@ const getOFACOracleSignature = (isMatched, minScore, currentDate) => {
 
   // encode and sign the data
   const mergedArrayOfFields = [
-    Field(isMatched),
+    Bool(isMatched).toField(),
     Field(minScore),
-    ...CircuitString.fromString(currentDate).toFields(),
+    Field(currentDate),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 
