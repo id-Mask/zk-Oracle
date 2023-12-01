@@ -18,6 +18,11 @@ const {
   getOFACOracleSignature,
 } = require('./sanctions.utils.js')
 
+const {
+  getSecretValueOfIdentity,
+  getSecretValueOracleSignature,
+} = require('./uniqueHuman.utils.js')
+
 const cors = require('cors')
 require('dotenv').config()
 
@@ -267,5 +272,53 @@ app.post('/getOFACmatches', async (req, res) => {
   })
 })
 
+
+/**
+ * POST /getSecretValueOfIdentity
+ * @summary Get a secret unique value to each identity to include as part of the hash 
+ * to enhance security and mitigate the risk of tracebility
+ * @tags Unique Human Oracle
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * {
+ *   "data": {
+ *      "name": "Jane",
+ *      "surname": "Springclean",
+ *      "country": "LT",
+ *      "pno": "PNOLT-10304195494",
+ *      "currentDate": 20231201
+ *   },
+ * 
+ *   "signature": {
+ *      "r": "6284773182382681048549668250691358053998798057701156358295686650796914122175",
+ *      "s": "14982014700584303280139522296693531266742513419869997382512229379810952134357"
+ *   },
+ *   "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
+ * }
+ */
+app.post('/getSecretValueOfIdentity', async (req, res) => {
+  // verify if provided data is valid, i.e. data is from the smartID oracle
+  // and is properly signed and not tampered with
+  try {
+    const isDataValid = verifyOracleData(req.body)
+    if (!isDataValid) {
+      return res.send({ error: 'verify signature: invalid data' })
+    }
+  } catch (error) {
+    return res.send({ error: error.toString() })
+  }
+
+  // get secret and sign it
+  const secret = await getSecretValueOfIdentity(req.body)
+  const [signature, publicKey] = getSecretValueOracleSignature(secret)
+
+  return res.send({
+    data: {
+      secret: secret,
+    },
+    signature: signature.toJSON(),
+    publicKey: publicKey.toBase58(),
+  })
+})
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
