@@ -50,22 +50,55 @@ const computeVerificationCode = (hash) => {
   return code
 }
 
+const getSmartIdConfig = async () => {
+  /*
+    Fetch config from env.CONFIG_URL
+    This is for the sole reason to be able to quickly 
+    switch from prod to demo versions and vice versa
+  */
+  const demoConfig = {
+    relyingPartyUUID: '00000000-0000-0000-0000-000000000000',
+    relyingPartyName: 'DEMO',
+  }
+
+  let config
+  try {
+    const configUrl = process.env.CONFIG_URL
+    const response = await fetch(configUrl)
+    config = await response.json()
+  } catch {
+    return demoConfig
+  }
+
+  if (config?.useProdUuid) {
+    return {
+      relyingPartyUUID: process.env.SMART_ID_UUI_PROD,
+      relyingPartyName: 'id-mask',
+    }
+  } else {
+    return demoConfig
+  }
+
+}
+
 
 const initiateSession = async (country, pno, hash, displayText) => {
 
   const baseURL = 'https://sid.demo.sk.ee/smart-id-rp/v2/'
+  const smartIdConfig = await getSmartIdConfig()
   const data = {
-    'relyingPartyUUID': '00000000-0000-0000-0000-000000000000',
-    'relyingPartyName': 'DEMO',
-    'certificateLevel': 'QUALIFIED',
-    'hash': hash.digest,
-    'hashType': 'SHA512',
-    'allowedInteractionsOrder': [
-      {
-        'type': 'displayTextAndPIN',
-        'displayText60': displayText
-      }
-    ]
+    ...smartIdConfig, 
+    ...{
+      'certificateLevel': 'QUALIFIED',
+      'hash': hash.digest,
+      'hashType': 'SHA512',
+      'allowedInteractionsOrder': [
+        {
+          'type': 'displayTextAndPIN',
+          'displayText60': displayText
+        }
+      ]
+    }
   }
 
   const url = baseURL + 'authentication/etsi/' + 'PNO' + country + '-' + pno
