@@ -50,15 +50,23 @@ const computeVerificationCode = (hash) => {
   return code
 }
 
-const getSmartIdConfig = async () => {
+const getConfig = async () => {
   /*
-    Fetch config from env.CONFIG_URL
+    Set DEMO or PROD configuration
+    Fetch config  from env.CONFIG_URL
     This is for the sole reason to be able to quickly 
     switch from prod to demo versions and vice versa
   */
   const demoConfig = {
     relyingPartyUUID: '00000000-0000-0000-0000-000000000000',
     relyingPartyName: 'DEMO',
+    baseUrl: 'https://sid.demo.sk.ee/smart-id-rp/v2/',
+  }
+
+  const prodConfig ={
+    relyingPartyUUID: process.env.SMART_ID_UUI_PROD,
+    relyingPartyName: 'id-mask',
+    baseUrl: 'https://rp-api.smart-id.com/v2/',
   }
 
   let config
@@ -69,39 +77,29 @@ const getSmartIdConfig = async () => {
   } catch {
     return demoConfig
   }
-
-  if (config?.useProdUuid) {
-    return {
-      relyingPartyUUID: process.env.SMART_ID_UUI_PROD,
-      relyingPartyName: 'id-mask',
-    }
-  } else {
-    return demoConfig
-  }
+  console.log(config)
+  return config?.prod ? prodConfig : demoConfig
 
 }
 
 
 const initiateSession = async (country, pno, hash, displayText) => {
-
-  const baseURL = 'https://sid.demo.sk.ee/smart-id-rp/v2/'
-  const smartIdConfig = await getSmartIdConfig()
+  const config = await getConfig()
   const data = {
-    ...smartIdConfig, 
-    ...{
-      'certificateLevel': 'QUALIFIED',
-      'hash': hash.digest,
-      'hashType': 'SHA512',
-      'allowedInteractionsOrder': [
-        {
-          'type': 'displayTextAndPIN',
-          'displayText60': displayText
-        }
-      ]
-    }
+    'relyingPartyUUID': config.relyingPartyUUID,
+    'relyingPartyName': config.relyingPartyName,
+    'certificateLevel': 'QUALIFIED',
+    'hash': hash.digest,
+    'hashType': 'SHA512',
+    'allowedInteractionsOrder': [
+      {
+        'type': 'displayTextAndPIN',
+        'displayText60': displayText
+      }
+    ]
   }
 
-  const url = baseURL + 'authentication/etsi/' + 'PNO' + country + '-' + pno
+  const url = config.baseUrl + 'authentication/etsi/' + 'PNO' + country + '-' + pno
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -114,7 +112,8 @@ const initiateSession = async (country, pno, hash, displayText) => {
 }
 
 const getData = async (session) => {
-  const baseURL = 'https://sid.demo.sk.ee/smart-id-rp/v2/'
+  const config = await getConfig()
+  const baseURL = config.baseUrl
   const url = baseURL + 'session/' + session + '?timeoutMs=30000'
   const response = await fetch(url, {
     method: 'GET',
