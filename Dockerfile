@@ -1,7 +1,7 @@
-# docker build -t eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle .
-# docker run -p 8080:8080 eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
-# docker push eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
-# gcloud run deploy --image eu.gcr.io/zk-snarkyjs-oracles/id-mask-oracle
+# docker build -t eu.gcr.io/id-mask-409508/id-mask-oracle .
+# docker run -p 8080:8080 eu.gcr.io/id-mask-409508/id-mask-oracle
+# docker push eu.gcr.io/id-mask-409508/id-mask-oracle
+# gcloud run deploy --image eu.gcr.io/id-mask-409508/id-mask-oracle --max-instances=1 --vpc-connector=id-mask-connector --vpc-egress=all-traffic
 
 
 # Stage 1: Build dependencies
