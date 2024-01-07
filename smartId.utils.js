@@ -77,7 +77,6 @@ const getConfig = async () => {
   } catch {
     return demoConfig
   }
-  console.log(config)
   return config?.prod ? prodConfig : demoConfig
 
 }
