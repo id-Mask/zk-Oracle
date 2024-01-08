@@ -47,7 +47,8 @@ const computeVerificationCode = (hash) => {
   const hashedHash = crypto.createHash('sha256').update(Buffer.from(hash.digest, 'base64')).digest()
   const intValue = hashedHash.readUIntBE(hashedHash.length - 2, 2)
   const code = intValue % 10000
-  return code
+  const paddedCode = code.toString().padStart(4, '0')
+  return paddedCode
 }
 
 const getConfig = async () => {
@@ -65,7 +66,7 @@ const getConfig = async () => {
 
   const prodConfig ={
     relyingPartyUUID: process.env.SMART_ID_UUI_PROD,
-    relyingPartyName: 'id-mask',
+    relyingPartyName: 'idmask',
     baseUrl: 'https://rp-api.smart-id.com/v2/',
   }
 
