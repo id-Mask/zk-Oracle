@@ -31,7 +31,7 @@ const options = {
   info: {
     version: 'demo',
     title: 'Id-Mask: zk powered identity',
-    description: 'API endpoints for accessing identity and associated data that powers Id-Mask zkApp.',
+    description: 'API endpoints for accessing identity and associated data that powers <b><a href="https://idmask.xyz/">id-mask</a></b>',
   },
   baseDir: __dirname,
   swaggerUIPath: '/api-docs',
