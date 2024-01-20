@@ -18,6 +18,7 @@ WORKDIR /app
 COPY --from=dependencies /app .
 COPY *.js .
 COPY .env .
+COPY .googleCreds.json .
 
 EXPOSE 8080
 CMD ["npm", "run", "start"]

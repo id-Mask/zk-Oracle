@@ -23,6 +23,10 @@ const {
   getSecretValueOracleSignature,
 } = require('./uniqueHuman.utils.js')
 
+const {
+  GoogleWallet
+} = require('./googleWallet.utils.js')
+
 const cors = require('cors')
 require('dotenv').config()
 
@@ -348,5 +352,36 @@ app.post('/uploadToIPFS', async (req, res) => {
   return res.send(response_)
 })
 
+
+/**
+ * POST /createGoogeWalletPass
+ * @summary Save proof as google wallet pass
+ * @tags Google wallet
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * {
+ *   "email": "raidas@gmail.com",
+ *   "data": {
+ *     "ipfs": {
+ *       "IpfsHash": "QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb",
+ *       "PinSize": 10,
+ *       "Timestamp": "2024-01-14T14:36:27.762Z",
+ *       "isDuplicate": true
+ *     },
+ *     "secretKey": "rz?08e5@_q&*IVp)#c72",
+ *     "proof": "proofOfAge"
+ *   }
+ * }
+ */
+app.post('/createGoogeWalletPass', async (req, res) => {
+  const googleWallet = new GoogleWallet()
+  await googleWallet.createPassClass() // check if exist, create if not
+  const token = await googleWallet.createPassObject(
+    req.body.email,
+    req.body.data,
+  )
+  console.log(token)
+  return res.send(token)
+})
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
