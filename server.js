@@ -360,7 +360,7 @@ app.post('/uploadToIPFS', async (req, res) => {
  * @param {object} request.body - a json containing data
  * @example request - payload example
  * {
- *   "email": "raidas@gmail.com",
+ *   "identifier": "lkajsdlkja1231sd",
  *   "data": {
  *     "ipfs": {
  *       "IpfsHash": "QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb",
@@ -377,11 +377,10 @@ app.post('/createGoogeWalletPass', async (req, res) => {
   const googleWallet = new GoogleWallet()
   await googleWallet.createPassClass() // check if exist, create if not
   const token = await googleWallet.createPassObject(
-    req.body.email,
+    req.body.identifier,
     req.body.data,
   )
-  console.log(token)
-  return res.send(token)
+  return res.send({token: token})
 })
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
