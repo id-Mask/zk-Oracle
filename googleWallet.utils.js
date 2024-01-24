@@ -41,6 +41,13 @@ class GoogleWallet {
   async createPassObject(identifier, qrCodeData) {
     let objectId = `${this.classId}.${identifier}`;
 
+    const proofNameMap = {
+      proofOfAge: 'Proof of Age',
+      proofOfSanctions: 'Proof of OFAC non-Sanctions',
+      ProofOfUniqueHuman: 'Proof of Unique Human',
+    }
+    console.log(proofNameMap[qrCodeData.proof])
+
     let genericObject = {
       'id': `${objectId}`,
       'classId': this.classId,
@@ -66,7 +73,7 @@ class GoogleWallet {
       'header': {
         'defaultValue': {
           'language': 'en',
-          'value': 'Proof of Age'
+          'value': proofNameMap[qrCodeData.proof]
         }
       },
       'barcode': {
