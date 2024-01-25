@@ -44,7 +44,7 @@ class GoogleWallet {
     const proofNameMap = {
       proofOfAge: 'Proof of Age',
       proofOfSanctions: 'Proof of OFAC non-Sanctions',
-      ProofOfUniqueHuman: 'Proof of Unique Human',
+      proofOfUniqueHuman: 'Proof of Unique Human',
     }
     console.log(proofNameMap[qrCodeData.proof])
 
