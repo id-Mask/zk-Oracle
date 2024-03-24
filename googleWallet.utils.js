@@ -45,6 +45,8 @@ class GoogleWallet {
       proofOfAge: 'Proof of Age',
       proofOfSanctions: 'Proof of OFAC non-Sanctions',
       proofOfUniqueHuman: 'Proof of Unique Human',
+      proofOfUniqueHuman: 'Proof of Unique Human',
+      proofOfNationality: 'Proof of Nationality',
     }
     console.log(proofNameMap[qrCodeData.proof])
 
