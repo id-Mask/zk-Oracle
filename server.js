@@ -51,19 +51,35 @@ app.use(express.json())
 app.use(cors({ origin: '*' }))
 expressJSDocSwagger(app)(options)
 
-// In-memory storage of the random hashes for sessions sessionId -> hash
-// TODO: use queue to create a limited size storage..?
-// TODO: explain why this is needed.
-const secretStorage = new Map()
-const maxStorageSize = 10
-const clearSecretStorage = () => {
-  if (secretStorage.size > maxStorageSize) {
-    const keysToDelete = Array.from(secretStorage.keys()).slice(0, secretStorage.size - maxStorageSize)
-    keysToDelete.forEach(key => secretStorage.delete(key))
+/**
+ * In-memory storage for session hashes.
+ * 
+ * Handles random hashes for session IDs, necessary for smart-id functionality. 
+ * When initializing an authentication session, a storage item is created. 
+ * Upon successful user authorization, the item is queried.
+ */
+const smartIdSessionStorage = new Map()
+
+/**
+ * In-memory storage for publick key verification process.
+ * 
+ * Handles public key verification session id to signature functionality.
+ * When initializing a public key verification session, a storage item is created. 
+ * Upon successful user verification, the item is queried.
+ */
+const proofOwnershipStorage = new Map()
+
+// clear the storage regularly, so that it holds no more than x entries
+const trimStorage = (storageMap) => {
+  const maxStorageSize = 20
+  if (storageMap.size > maxStorageSize) {
+    const keysToDelete = Array.from(storageMap.keys()).slice(0, storageMap.size - maxStorageSize)
+    keysToDelete.forEach(key => storageMap.delete(key))
   }
 }
 const clearIntervalMillis = 300000 // 5 minutes
-setInterval(clearSecretStorage, clearIntervalMillis)
+setInterval(() => trimStorage(smartIdSessionStorage), clearIntervalMillis)
+setInterval(() => trimStorage(proofOwnershipStorage), clearIntervalMillis)
 
 
 /**
@@ -133,7 +149,7 @@ app.post('/initiateSession', async (req, res) => {
   try {
     const hash = await getRandomHash()
     const data = await initiateSession(req.body.country, req.body.pno, hash, req.body.displayText)
-    secretStorage.set(data.sessionID, hash)
+    smartIdSessionStorage.set(data.sessionID, hash)
     const verificationCode = computeVerificationCode(hash)
     data.verificationCode = verificationCode
     res.send(data)
@@ -157,7 +173,7 @@ app.post('/initiateSession', async (req, res) => {
 app.post('/getData', async (req, res) => {
   try {
     const data = await getData(req.body.sessionID)
-    const hash = secretStorage.get(req.body.sessionID)
+    const hash = smartIdSessionStorage.get(req.body.sessionID)
     const isValid = verifyData(data, hash)
     if (!isValid) res.status(500).json({ error: 'Sha signature issue' })
     const data_ = decodeData(data)
@@ -381,6 +397,60 @@ app.post('/createGoogeWalletPass', async (req, res) => {
     req.body.data,
   )
   return res.send({token: token})
+})
+
+
+/**
+ * 
+ * POST /createOwnershipSession
+ * @summary Create a session, mapping sessionId to signature
+ * @tags Proof ownership verification
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * { }
+ */
+app.post('/createOwnershipSession', async (req, res) => {
+  const generateRandomId = () => {
+    return Math.floor(1000000 + Math.random() * 9000000)
+  }
+  const sessionId = generateRandomId()
+  proofOwnershipStorage.set(sessionId, null)
+  return res.send({sessionId: sessionId})
+})
+
+/**
+ * POST /verifyOwnership
+ * @summary Post the signature to the sessionID
+ * @tags Proof ownership verification
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * {
+ *   "sessionId": "1234567",
+ *   "signature": {
+ *     "r": "129844322551...1694297335141",
+ *     "s": "329351521415...4983498427774"
+ *   }
+ * }
+ */
+app.post('/verifyOwnership', async (req, res) => {
+  const sessionId = parseInt(req.body.sessionId)
+  proofOwnershipStorage.set(sessionId, req.body.signature)
+  return res.send({sessionId: req.body.sessionId})
+})
+
+/**
+ * POST /getSignatureFromOwnershipSession
+ * @summary Get the signature from sessionID
+ * @tags Proof ownership verification
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * {
+ *   "sessionId": "1234567"
+ * }
+ */
+app.post('/getSignatureFromOwnershipSession', async (req, res) => {
+  const sessionId = parseInt(req.body.sessionId)
+  return res.send(proofOwnershipStorage.get(sessionId))
 })
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
