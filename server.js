@@ -450,7 +450,7 @@ app.post('/verifyOwnership', async (req, res) => {
  */
 app.post('/getSignatureFromOwnershipSession', async (req, res) => {
   const sessionId = parseInt(req.body.sessionId)
-  return res.send(proofOwnershipStorage.get(sessionId))
+  return res.send(proofOwnershipStorage.get(sessionId) || {})
 })
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
