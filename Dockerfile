@@ -5,7 +5,7 @@
 
 
 # Stage 1: Build dependencies
-FROM node:18.12.1-alpine as dependencies
+FROM node:18.12.1-alpine AS dependencies
 WORKDIR /app
 COPY package.json .
 RUN apk add --no-cache --virtual .build-deps alpine-sdk python3
