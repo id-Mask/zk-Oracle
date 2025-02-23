@@ -151,7 +151,7 @@ const decodeData = (response_) => {
 }
 
 
-const getOracleSignature = (name, surname, country, pno, currentDate) => {
+const getOracleSignature = (name, surname, country, pno, currentDate, isMockData) => {
 
   const privateKey = PrivateKey.fromBase58(process.env.PRIVATE_KEY)
   const publicKey = privateKey.toPublicKey()
@@ -163,6 +163,7 @@ const getOracleSignature = (name, surname, country, pno, currentDate) => {
     ...CircuitString.fromString(country).toFields(),
     ...CircuitString.fromString(pno).toFields(),
     Field(currentDate),
+    Field(isMockData),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 

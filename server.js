@@ -104,6 +104,7 @@ app.get('/getSmartIDMockData', async (req, res) => {
   const data = getMockSmartIdData()
   const now = new Date()
   const currentDate = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+  const isMockData = 1
 
   const [signature, publicKey] = getOracleSignature(
     data.subject.givenName,
@@ -111,6 +112,7 @@ app.get('/getSmartIDMockData', async (req, res) => {
     data.subject.countryName,
     data.subject.serialNumber,
     currentDate,
+    isMockData
   )
 
   res.send({
@@ -120,6 +122,7 @@ app.get('/getSmartIDMockData', async (req, res) => {
       country: data.subject.countryName,
       pno: data.subject.serialNumber,
       currentDate: currentDate,
+      isMockData: isMockData,
     },
     signature: signature.toJSON(),
     publicKey: publicKey.toBase58(),
@@ -179,6 +182,7 @@ app.post('/getData', async (req, res) => {
     const data_ = decodeData(data)
     const now = new Date()
     const currentDate = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+    const isMockData = 0
 
     const [signature, publicKey] = getOracleSignature(
       data_.subject.givenName,
@@ -186,6 +190,7 @@ app.post('/getData', async (req, res) => {
       data_.subject.countryName,
       data_.subject.serialNumber,
       currentDate,
+      isMockData
     )
 
     res.send({
@@ -195,6 +200,7 @@ app.post('/getData', async (req, res) => {
         country: data_.subject.countryName,
         pno: data_.subject.serialNumber,
         currentDate: currentDate,
+        isMockData: isMockData,
       },
       signature: signature.toJSON(),
       publicKey: publicKey.toBase58(),
@@ -278,6 +284,7 @@ app.post('/getOFACmatches', async (req, res) => {
     isMatched,
     req.body.minScore,
     currentDate,
+    req.body.data.isMockData,
   )
 
   return res.send({
@@ -285,6 +292,7 @@ app.post('/getOFACmatches', async (req, res) => {
       isMatched: isMatched,
       minScore: req.body.minScore,
       currentDate: currentDate,
+      isMockData: req.body.data.isMockData
     },
     signature: signature.toJSON(),
     publicKey: publicKey.toBase58(),

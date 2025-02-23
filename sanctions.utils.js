@@ -17,6 +17,7 @@ const verifyOracleData = (data) => {
     ...CircuitString.fromString(data.data.country).toFields(),
     ...CircuitString.fromString(data.data.pno).toFields(),
     Field(data.data.currentDate),
+    Field(data.data.isMockData),
   ])
   return validSignature.toBoolean()
 }
@@ -104,7 +105,7 @@ const searchOFAC = async (minScore, cases) => {
   return response_
 }
 
-const getOFACOracleSignature = (isMatched, minScore, currentDate) => {
+const getOFACOracleSignature = (isMatched, minScore, currentDate, isMockData) => {
   const privateKey = PrivateKey.fromBase58(process.env.PRIVATE_KEY)
   const publicKey = privateKey.toPublicKey()
 
@@ -113,6 +114,7 @@ const getOFACOracleSignature = (isMatched, minScore, currentDate) => {
     Bool(isMatched).toField(),
     Field(minScore),
     Field(currentDate),
+    Field(isMockData),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 
