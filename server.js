@@ -1,4 +1,5 @@
 const express = require('express')
+const { MongoClient } = require('mongodb');
 const expressJSDocSwagger = require('express-jsdoc-swagger')
 const {
   getRandomHash,
@@ -30,7 +31,6 @@ const {
 const cors = require('cors')
 require('dotenv').config()
 
-
 const options = {
   info: {
     version: 'demo',
@@ -50,6 +50,28 @@ const app = express()
 app.use(express.json())
 app.use(cors({ origin: '*' }))
 expressJSDocSwagger(app)(options)
+
+
+/*
+  MongoDB connection  
+  This is used to store key-value pairs of passkeys, where the key is a unique ID
+  and the value is the associated public key (pk).  
+
+  Why do we need to store public keys?  
+  - When a user creates a passkey on one device, the private key remains securely on that device and is never shared.  
+  - If the user later tries to authenticate using a different device, we must validate the authentication assertion  
+    by verifying the signature using the public key.  
+  - Since the public key is only accessible at the time of passkey creation (during registration), we must store it  
+    in a database so it can be used for future verifications.
+
+  Without storing the public key, cross-device authentication would be impossible because we would have no way  
+  to verify the user's identity without the corresponding public key.
+
+  This is why a database is necessary - to link known IDs to their public keys for secure cross-device passkey authentication.
+*/
+const client = new MongoClient(process.env.MONGO_URI);
+const db = client.db('id-mask');
+const collection = db.collection('passkeys');
 
 /**
  * In-memory storage for session hashes.
@@ -460,5 +482,62 @@ app.post('/getSignatureFromOwnershipSession', async (req, res) => {
   const sessionId = parseInt(req.body.sessionId)
   return res.send(proofOwnershipStorage.get(sessionId) || {})
 })
+
+
+/**
+ * POST /passkeys/insert
+ * @summary save passkeys user id: pk
+ * @tags Passkeys
+ * @param {object} request.body - a json containing {id: pk}
+ * @example request - payload example
+ * {
+ *   "key": "test-id-123"
+ * }
+ */
+app.post('/passkeys/insert', async (req, res) => {
+  try {
+    const entries = Object.entries(req.body);
+    if (entries.length !== 1) {
+      return res.status(400).json({ error: 'Request body must contain exactly one key-value pair' });
+    }
+
+    const [key, value] = entries[0];
+    if (!key || !value) {
+      return res.status(400).json({ error: 'Invalid key or value' });
+    }
+
+    if (typeof key !== 'string' || typeof value !== 'string') {
+      return res.status(400).json({ error: 'Key and value must be strings' });
+    }
+
+    if (value.length > 200) {
+      return res.status(400).json({ error: 'Value cannot exceed 200 characters' });
+    }
+
+    await collection.insertOne({ key, value });
+    res.status(201).json({ message: 'Inserted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+/**
+ * GET /passkeys/fetch/:key
+ * @summary fetch passkye given id
+ * @tags Passkeys
+ */
+app.get('/passkeys/fetch/:key', async (req, res) => {
+  try {
+    const key = req.params.key;
+    const result = await collection.findOne({ key });
+    if (!result) return res.status(404).json({ error: 'Not found' });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 app.listen(8080, () => console.log(`App's running: http://localhost:8080/`))
