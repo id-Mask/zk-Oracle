@@ -78,8 +78,7 @@ const getConfig = async () => {
   } catch {
     return demoConfig
   }
-  // return config?.prod ? prodConfig : demoConfig
-  return demoConfig
+  return config?.prod ? prodConfig : demoConfig
 }
 
 
