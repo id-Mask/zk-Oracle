@@ -26,7 +26,7 @@ const getSecretValueOracleSignature = (secret) => {
 
   // encode and sign the data
   const mergedArrayOfFields = [
-    ...CircuitString.fromString(secret).toFields(),
+    ...CircuitString.fromString(secret).values.map((item) => item.toField()),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
   return [signature, publicKey]

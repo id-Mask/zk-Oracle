@@ -1,5 +1,5 @@
-const crypto = require('crypto')
-const x509 = require('@ghaiklor/x509')
+const forge = require('node-forge')
+const crypto = require('crypto');
 const { PrivateKey, Signature, CircuitString, Field } = require('o1js')
 require('dotenv').config()
 
@@ -78,8 +78,8 @@ const getConfig = async () => {
   } catch {
     return demoConfig
   }
-  return config?.prod ? prodConfig : demoConfig
-
+  // return config?.prod ? prodConfig : demoConfig
+  return demoConfig
 }
 
 
@@ -139,16 +139,48 @@ const verifyData = (response_, hash) => {
   }
 }
 
-const decodeData = (response_) => {
+const decodeData = async (response_) => {
   const CERT_BEGIN = '-----BEGIN CERTIFICATE-----\n'
   const CERT_END = '\n-----END CERTIFICATE-----'
   const BODY_VALUE = response_.cert.value
+  
+  const certPem = CERT_BEGIN + BODY_VALUE.trim() + CERT_END
+  const certDer = forge.util.decode64(certPem.replace(CERT_BEGIN, '').replace(CERT_END, ''))
+  const certificate = forge.pki.certificateFromAsn1(forge.asn1.fromDer(certDer))
 
-  const cert = CERT_BEGIN + BODY_VALUE + CERT_END
-  const parsedCert = x509.parseCert(cert)
+  // Parse cert values to object
+  const data = { subject: {} }
 
-  return parsedCert
+  // Define the OIDs for specific fields
+  const oids = {
+    givenName: '2.5.4.42',  // OID for 'givenName'
+    surname: '2.5.4.4',     // OID for 'surname'
+    countryName: '2.5.4.6', // OID for 'countryName'
+    serialNumber: '2.5.4.5' // OID for 'serialNumber'
+  }
+  
+  // Loop through attributes to check for specific OIDs
+  for (let i = 0; i < certificate.subject.attributes.length; i++) {
+    const attr = certificate.subject.attributes[i]
+    switch (attr.type) {
+      case oids.givenName:
+        data.subject.givenName = attr.value
+        break
+      case oids.surname:
+        data.subject.surname = attr.value
+        break
+      case oids.countryName:
+        data.subject.countryName = attr.value
+        break
+      case oids.serialNumber:
+        data.subject.serialNumber = attr.value
+        break
+    }
+  }
+
+  return data
 }
+
 
 
 const getOracleSignature = (name, surname, country, pno, currentDate, isMockData) => {
@@ -158,12 +190,12 @@ const getOracleSignature = (name, surname, country, pno, currentDate, isMockData
 
   // encode and sign the data
   const mergedArrayOfFields = [
-    ...CircuitString.fromString(name).toFields(),
-    ...CircuitString.fromString(surname).toFields(),
-    ...CircuitString.fromString(country).toFields(),
-    ...CircuitString.fromString(pno).toFields(),
+    ...CircuitString.fromString(name).values.map((item) => item.toField()),
+    ...CircuitString.fromString(surname).values.map((item) => item.toField()),
+    ...CircuitString.fromString(country).values.map((item) => item.toField()),
+    ...CircuitString.fromString(pno).values.map((item) => item.toField()),
     Field(currentDate),
-    // Field(isMockData),
+    Field(isMockData),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 

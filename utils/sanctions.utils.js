@@ -12,10 +12,10 @@ const verifyOracleData = (data) => {
   const PUBLIC_KEY = 'B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'
   const signature = Signature.fromJSON(data.signature)
   const validSignature = signature.verify(PublicKey.fromBase58(PUBLIC_KEY), [
-    ...CircuitString.fromString(data.data.name).toFields(),
-    ...CircuitString.fromString(data.data.surname).toFields(),
-    ...CircuitString.fromString(data.data.country).toFields(),
-    ...CircuitString.fromString(data.data.pno).toFields(),
+    ...CircuitString.fromString(data.data.name).values.map((item) => item.toField()),
+    ...CircuitString.fromString(data.data.surname).values.map((item) => item.toField()),
+    ...CircuitString.fromString(data.data.country).values.map((item) => item.toField()),
+    ...CircuitString.fromString(data.data.pno).values.map((item) => item.toField()),
     Field(data.data.currentDate),
     Field(data.data.isMockData),
   ])
