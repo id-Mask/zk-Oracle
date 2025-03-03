@@ -70,7 +70,6 @@ router.post('/getOFACmatches', async (req, res) => {
     isMatched,
     req.body.minScore,
     currentDate,
-    req.body.data.isMockData,
   )
 
   return res.send({
@@ -78,7 +77,6 @@ router.post('/getOFACmatches', async (req, res) => {
       isMatched: isMatched,
       minScore: req.body.minScore,
       currentDate: currentDate,
-      isMockData: req.body.data.isMockData
     },
     signature: signature.toJSON(),
     publicKey: publicKey.toBase58(),

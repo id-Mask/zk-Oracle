@@ -105,7 +105,7 @@ const searchOFAC = async (minScore, cases) => {
   return response_
 }
 
-const getOFACOracleSignature = (isMatched, minScore, currentDate, isMockData) => {
+const getOFACOracleSignature = (isMatched, minScore, currentDate) => {
   const privateKey = PrivateKey.fromBase58(process.env.PRIVATE_KEY)
   const publicKey = privateKey.toPublicKey()
 
@@ -114,7 +114,6 @@ const getOFACOracleSignature = (isMatched, minScore, currentDate, isMockData) =>
     Bool(isMatched).toField(),
     Field(minScore),
     Field(currentDate),
-    Field(isMockData),
   ]
   const signature = Signature.create(privateKey, mergedArrayOfFields)
 
