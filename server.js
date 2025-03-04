@@ -45,9 +45,16 @@ app.use('/ownership', storageMiddleware, ownershipRoutes.router)
 const PORT = process.env.PORT || 8080
 const startServer = async () => {
 
-  // db connection and collection
+  /*
+    Centralized DB to enable cross-device passkey usage. While passkey ownership verification itself 
+    doesn't require storage — zero-knowledge proofs output the public key in publicOutput — we still 
+    need this DB for cross-device support. If a passkey pair is created on one device (e.g., a phone) 
+    and later used to generate a proof on another (e.g., a laptop), the public key would be lost 
+    without back-end storage, since WebAuthn only exposes public keys during creation 
+    (navigator.credentials.create), not during authentication (navigator.credentials.get). 
+    This database stores public keys, a necessary trade-off for seamless cross-device login.
+  */
   const db = await connectDB()
-  app.locals.db = db
   app.locals.passkeysCollection = db.collection('passkeys')
 
   app.listen(PORT, () => console.log(`App's running: http://localhost:${PORT}/`))
