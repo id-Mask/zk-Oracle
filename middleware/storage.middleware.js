@@ -34,13 +34,13 @@ class StorageManager {
   }
 
   // Proof ownership methods
-  setProofOwnership(sessionId, signature) {
-    this.proofOwnershipStorage.set(sessionId, signature)
-  }
+  // setProofOwnership(sessionId, signature) {
+  //   this.proofOwnershipStorage.set(sessionId, signature)
+  // }
 
-  getProofOwnership(sessionId) {
-    return this.proofOwnershipStorage.get(sessionId)
-  }
+  // getProofOwnership(sessionId) {
+  //   return this.proofOwnershipStorage.get(sessionId)
+  // }
 }
 
 // Create a singleton instance

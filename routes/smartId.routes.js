@@ -61,7 +61,7 @@ router.post('/initiateSession', async (req, res) => {
   try {
     const hash = await getRandomHash()
     const data = await initiateSession(req.body.country, req.body.pno, hash, req.body.displayText)
-    req.storageManager.setSmartIdSession(data.sessionID, hash)
+    req.storageManager.smartIdSessionStorage.set(data.sessionID, hash)
     const verificationCode = computeVerificationCode(hash)
     data.verificationCode = verificationCode
     res.send(data)
@@ -84,7 +84,7 @@ router.post('/initiateSession', async (req, res) => {
 router.post('/getData', async (req, res) => {
   try {
     const data = await getData(req.body.sessionID)
-    const hash = req.storageManager.getSmartIdSession(req.body.sessionID)
+    const hash = req.storageManager.smartIdSessionStorage.get(req.body.sessionID)
     const isValid = verifyData(data, hash)
     if (!isValid) res.status(500).json({ error: 'Sha signature issue' })
     const data_ = await decodeData(data)

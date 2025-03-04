@@ -14,7 +14,8 @@ router.post('/createSession', async (req, res) => {
     return Math.floor(1000000 + Math.random() * 9000000)
   }
   const sessionId = generateRandomId()
-  req.storageManager.setProofOwnership(sessionId, null)
+  // req.storageManager.setProofOwnership(sessionId, null)
+  req.storageManager.proofOwnershipStorage.set(sessionId, null)
   return res.send({sessionId: sessionId})
 })
 
@@ -34,7 +35,7 @@ router.post('/createSession', async (req, res) => {
  */
 router.post('/verify', async (req, res) => {
   const sessionId = parseInt(req.body.sessionId)
-  req.storageManager.setProofOwnership(sessionId, req.body.signature)
+  req.storageManager.proofOwnershipStorage.set(sessionId, req.body.signature)
   return res.send({sessionId: req.body.sessionId})
 })
 
@@ -50,7 +51,7 @@ router.post('/verify', async (req, res) => {
  */
 router.post('/getSignature', async (req, res) => {
   const sessionId = parseInt(req.body.sessionId)
-  return res.send(req.storageManager.getProofOwnership(sessionId) || {})
+  return res.send(req.storageManager.proofOwnershipStorage.get(sessionId) || {})
 })
 
 module.exports = {
