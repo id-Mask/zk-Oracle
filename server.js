@@ -37,7 +37,7 @@ app.use('/smartId', storageMiddleware, smartIdRoutes.router)
 app.use('/sanctions', sanctionsRoutes.router)
 app.use('/uniqueHuman', uniqueHumanRoutes.router)
 app.use('/googleWallet', googleWalletRoutes.router)
-app.use('/passkeys', passkeysRoutes.router)
+app.use('/passkeys', storageMiddleware, passkeysRoutes.router)
 app.use('/ipfs', ipfsRoutes.router)
 app.use('/ownership', storageMiddleware, ownershipRoutes.router)
 

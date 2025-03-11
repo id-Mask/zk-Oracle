@@ -58,6 +58,74 @@ router.get('/fetch/:key', async (req, res) => {
   }
 });
 
+
+/*
+  Below are the endpoints for creating a challange, storing it to
+  faciliate communication, storing whole assertion object from webauthn
+  and providing an endpoint to fetch it for the proof consumer
+*/
+
+
+/**
+ * POST /passkeys/createChallangeSession
+ * @summary Create a session, mapping challange to signature
+ * @tags Passkeys
+ * @param {object} request.body - a json containing data
+ * @example request - payload example
+ * { }
+ */
+router.post('/createChallangeSession', async (req, res) => {
+  const generateRandomChallange = () => {
+    return Math.random().toString(36).slice(2, 10);
+  }
+  const challange = generateRandomChallange()
+  // req.storageManager.setProofOwnership(sessionId, null)
+  req.storageManager.passkeysChallangeStorage.set(challange, null)
+  return res.send({challange: challange})
+})
+
+/**
+ * POST /passkeys/postAssertion
+ * @summary Post the assertion object to the challenge
+ * @tags Passkeys
+ * @param {object} request.body - a JSON containing data
+ * @example request - payload example
+ * {
+ *   "challange": "1234567",
+ *   "assertion": {
+ *     "clientExtensionResults": {
+ *       "authenticatorData": "...",
+ *       "signature": "...",
+ *       "userHandle": "...",
+ *       "clientDataJSON": "..."
+ *     },
+ *     "rawId": "aUa_HtPHxr_JwcdWHSAweQ",
+ *     "response": "aUa_HtPHxr_JwcdWHSAweQ",
+ *     "authenticatorAttachment": "aUa_HtPHxr_JwcdWHSAweQ",
+ *     "id": "aUa_HtPHxr_JwcdWHSAweQ",
+ *     "type": "public-key"
+ *   }
+ * }
+ */
+router.post('/postAssertion', async (req, res) => {
+  const challange = parseInt(req.body.challange)
+  req.storageManager.passkeysChallangeStorage.set(challange, req.body.assertion)
+  return res.send({challange: req.body.challange})
+})
+
+/**
+ * GET /passkeys/getAssertion
+ * @summary Get the assertion of the challenge
+ * @tags Passkeys
+ * @param {string} request.query.challenge - The challenge ID
+ * @example request - example with query param
+ * /passkeys/getAssertion?challenge=1234567
+*/
+router.get('/getAssertion', async (req, res) => {
+  const challenge = parseInt(req.query.challenge);
+  res.send(req.storageManager.passkeysChallangeStorage.get(challenge) || {});
+})
+
 module.exports = {
   router
 }
