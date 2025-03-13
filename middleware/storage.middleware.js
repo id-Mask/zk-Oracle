@@ -5,7 +5,7 @@ class StorageManager {
   constructor() {
     this.smartIdSessionStorage = new Map()
     this.proofOwnershipStorage = new Map()
-    this.passkeysChallangeStorage = new Map()
+    this.passkeysChallengeStorage = new Map()
     this.maxStorageSize = 5000
     this.clearIntervalMillis = 300000 // 5 minutes
     
@@ -16,7 +16,7 @@ class StorageManager {
   startCleanupTimers() {
     setInterval(() => this.trimStorage(this.smartIdSessionStorage), this.clearIntervalMillis)
     setInterval(() => this.trimStorage(this.proofOwnershipStorage), this.clearIntervalMillis)
-    setInterval(() => this.trimStorage(this.passkeysChallangeStorage), this.clearIntervalMillis)
+    setInterval(() => this.trimStorage(this.passkeysChallengeStorage), this.clearIntervalMillis)
   }
 
   trimStorage(storageMap) {
