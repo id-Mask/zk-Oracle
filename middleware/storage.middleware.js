@@ -25,24 +25,6 @@ class StorageManager {
       keysToDelete.forEach(key => storageMap.delete(key))
     }
   }
-
-  // SmartID session methods
-  // setSmartIdSession(sessionId, hash) {
-  //   this.smartIdSessionStorage.set(sessionId, hash)
-  // }
-
-  // getSmartIdSession(sessionId) {
-  //   return this.smartIdSessionStorage.get(sessionId)
-  // }
-
-  // Proof ownership methods
-  // setProofOwnership(sessionId, signature) {
-  //   this.proofOwnershipStorage.set(sessionId, signature)
-  // }
-
-  // getProofOwnership(sessionId) {
-  //   return this.proofOwnershipStorage.get(sessionId)
-  // }
 }
 
 // Create a singleton instance
