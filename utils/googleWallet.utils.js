@@ -8,7 +8,7 @@ class GoogleWallet {
     this.issuerId = process.env.GOOGLE_ISSUER_ID;
     this.classId = `${this.issuerId}.id_mask_pass_v0`;
     this.baseUrl = 'https://walletobjects.googleapis.com/walletobjects/v1';
-    this.credentials = require('./.googleCreds.json');
+    this.credentials = require('../.googleCreds.json');
     this.httpClient = new GoogleAuth({
       credentials: this.credentials,
       scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
