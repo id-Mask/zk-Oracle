@@ -1,10 +1,3 @@
-# docker build -t eu.gcr.io/id-mask-409508/id-mask-oracle .
-# docker run -p 8080:8080 eu.gcr.io/id-mask-409508/id-mask-oracle
-# docker push eu.gcr.io/id-mask-409508/id-mask-oracle
-# gcloud run deploy --image eu.gcr.io/id-mask-409508/id-mask-oracle --max-instances=1 --vpc-connector=id-mask-connector --vpc-egress=all-traffic
-
-# Move away from Google Container Registry (GCR) (eu.gcr.io/...) and use Artifact Registry instead.
-#
 # docker build -t us-central1-docker.pkg.dev/id-mask-409508/id-mask-oracle/id-mask-oracle .
 # docker run -p 8080:8080 us-central1-docker.pkg.dev/id-mask-409508/id-mask-oracle/id-mask-oracle
 # docker push us-central1-docker.pkg.dev/id-mask-409508/id-mask-oracle/id-mask-oracle
