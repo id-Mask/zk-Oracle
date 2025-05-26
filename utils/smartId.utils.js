@@ -170,16 +170,20 @@ const decodeData = async (response_) => {
     }
     return str;
   }
+
+  function sanitizeString(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
   
   // Loop through attributes to check for specific OIDs
   for (let i = 0; i < certificate.subject.attributes.length; i++) {
     const attr = certificate.subject.attributes[i]
     switch (attr.type) {
       case oids.givenName:
-        data.subject.givenName = fixEncodingIfNeeded(attr.value)
+        data.subject.givenName = sanitizeString(fixEncodingIfNeeded(attr.value))
         break
       case oids.surname:
-        data.subject.surname = fixEncodingIfNeeded(attr.value)
+        data.subject.surname = sanitizeString(fixEncodingIfNeeded(attr.value))
         break
       case oids.countryName:
         data.subject.countryName = attr.value
