@@ -157,16 +157,29 @@ const decodeData = async (response_) => {
     countryName: '2.5.4.6', // OID for 'countryName'
     serialNumber: '2.5.4.5' // OID for 'serialNumber'
   }
+
+  // try to fix weird ecoding issues
+  function fixEncodingIfNeeded(str) {
+    if (/[\u00C0-\u00FF]/.test(str)) {
+      try {
+        const fixed = Buffer.from(str, 'latin1').toString('utf8');
+        return fixed;
+      } catch (e) {
+        return str; // fallback if something goes wrong
+      }
+    }
+    return str;
+  }
   
   // Loop through attributes to check for specific OIDs
   for (let i = 0; i < certificate.subject.attributes.length; i++) {
     const attr = certificate.subject.attributes[i]
     switch (attr.type) {
       case oids.givenName:
-        data.subject.givenName = attr.value
+        data.subject.givenName = fixEncodingIfNeeded(attr.value)
         break
       case oids.surname:
-        data.subject.surname = attr.value
+        data.subject.surname = fixEncodingIfNeeded(attr.value)
         break
       case oids.countryName:
         data.subject.countryName = attr.value
