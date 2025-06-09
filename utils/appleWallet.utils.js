@@ -71,8 +71,8 @@ app.get('/', async (req, res) => {
     pass.logoText = 'ID-Mask';
     pass.barcodes = [
       {
-        message: 'Hello World',
-        format: JSON.stringify(data),
+        message: JSON.stringify(data),
+        format: 'PKBarcodeFormatQR',
         messageEncoding: 'utf-8',
         altText: 'Hello QR',
       },
